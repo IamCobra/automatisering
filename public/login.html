@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="./style">
+</head>
+<body>
+  <div class="login-container">
+    <h2>Log ind</h2>
+    <form id="loginForm">
+      <div class="input-group">
+        <label for="username">Brugernavn</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      <div class="input-group">
+        <label for="password">Adgangskode</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button id="loginFormSubmit" type="submit">Log ind</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("loginFormSubmit").addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      // Send login-oplysninger til serveren
+      const response = await fetch("/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+      });
+
+      const result = await response.json();
+      console.log(result)
+      if (result.success) {
+        window.location.reload()  // Redirect til check-in/check-out-siden efter login
+      } else {
+        alert(result.message || "Login fejlede. Tjek brugernavn og kodeord.");
+      }
+    });
+  </script>
+</body>
+</html>

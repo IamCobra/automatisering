@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check In/Out Timer</title>
+  <link rel="stylesheet" href="./style">
+</head>
+<body>
+  <div class="container">
+    <!-- Check-in/Check-out Section -->
+    <div id="checkInOutSection">
+      <button id="checkInBtn">Check Ind</button>
+      <button id="checkOutBtn" disabled>Check Ud</button>
+
+      <div class="timer" id="timerDisplay">00:00:00</div>
+      <div class="difference" id="differenceDisplay"></div>
+    </div>
+  </div>
+
+  <script>
+    // Check-in functionality
+    document.getElementById("checkInBtn").addEventListener("click", async () => {
+      const username = "marcus";  // Til test. Ændr til dynamisk senere
+      const password = "109666";  // Til test. Ændr til dynamisk senere
+
+      const response = await fetch("/checkin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+      });
+
+      if (response.ok) {
+        startTimer();
+      } else {
+        alert("Check-in fejlede.");
+      }
+    });
+
+    // Check-out functionality
+    document.getElementById("checkOutBtn").addEventListener("click", async () => {
+      const username = "marcus";  // Til test. Ændr til dynamisk senere
+      const password = "109666";  // Til test. Ændr til dynamisk senere
+
+      const response = await fetch("/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+      });
+
+      if (response.ok) {
+        stopTimer();
+      } else {
+        alert("Check-ud fejlede.");
+      }
+    });
+
+    // Timer functionality
+    let timerInterval;
+    let startTime;
+
+    function startTimer() {
+      startTime = Date.now();
+      timerInterval = setInterval(() => {
+        const elapsedTime = Date.now() - startTime;
+        document.getElementById("timerDisplay").textContent = formatTime(elapsedTime);
+      }, 1000);
+
+      document.getElementById("checkInBtn").disabled = true;
+      document.getElementById("checkOutBtn").disabled = false;
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      const totalTime = Date.now() - startTime;
+      document.getElementById("differenceDisplay").textContent = `Total tid: ${formatTime(totalTime)}`;
+
+      document.getElementById("checkInBtn").disabled = false;
+      document.getElementById("checkOutBtn").disabled = true;
+    }
+
+    function formatTime(timeInMilliseconds) {
+      let seconds = Math.floor((timeInMilliseconds / 1000) % 60);
+      let minutes = Math.floor((timeInMilliseconds / 1000 / 60) % 60);
+      let hours = Math.floor(timeInMilliseconds / 1000 / 60 / 60);
+      return (
+        String(hours).padStart(2, "0") +
+        ":" +
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0")
+      );
+    }
+  </script>
+</body>
+</html>
